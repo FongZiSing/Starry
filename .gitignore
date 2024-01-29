@@ -1,0 +1,17 @@
+# Visual Studio user specific files
+.vs/*
+.vscode/*
+Starry/x64/*
+TemplateApp/HelloStarry/x64/*
+*.aps
+
+# Compiled Dynamic libraries
+x64/**/*.dll
+
+# Compiled Static libraries
+x64/**/*.pdb
+x64/**/*.exp
+x64/**/*.lib
+
+# Executables
+x64/**/*.exe

@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{58b70114-5ed4-4899-983f-1c8be8d43551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry">
+      <UniqueIdentifier>{af3bcec4-9eb1-48e2-b880-7f0fe502f7c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty %28TODO%29">
+      <UniqueIdentifier>{aad77c03-c065-44d3-9418-425ecc8802db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine">
+      <UniqueIdentifier>{4598eafb-b13e-451e-9ebd-715a60097d5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine\Public">
+      <UniqueIdentifier>{99c0dc51-a22b-40fd-aa67-f3bcce39de88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Core">
+      <UniqueIdentifier>{9112b329-2a20-4c5d-9ec1-d2ed24c5126f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Core\Public">
+      <UniqueIdentifier>{979dc570-5d5f-437b-b5bc-aa437956ce22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Core\Private %28TODO%29">
+      <UniqueIdentifier>{6a4850c6-c00b-4063-9c4d-611174413af8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine\Private %28TODO%29">
+      <UniqueIdentifier>{b4523be4-1eec-4163-b0e6-c07fa0ecd1b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine\Public\ECS">
+      <UniqueIdentifier>{5b5be600-ff00-42ad-907a-ac077f9486f2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Starry\Core\Public\Math.hpp">
+      <Filter>Source\Starry\Core\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Core\Public\Ranges.hpp">
+      <Filter>Source\Starry\Core\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Core\Public\Vector.hpp">
+      <Filter>Source\Starry\Core\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\Particle.hpp">
+      <Filter>Source\Starry\Engine\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\Scene.hpp">
+      <Filter>Source\Starry\Engine\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\ECS\Component.hpp">
+      <Filter>Source\Starry\Engine\Public\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\ECS\Entity.hpp">
+      <Filter>Source\Starry\Engine\Public\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\ECS\System.hpp">
+      <Filter>Source\Starry\Engine\Public\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Starry.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

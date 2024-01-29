@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="HelloStarry.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{96f8746f-907a-4d96-8f87-b35fc545d3a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\EasyX">
+      <UniqueIdentifier>{1e0672fd-7e2a-44bb-8296-4b64f29b57f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\EasyX\include">
+      <UniqueIdentifier>{a5e9595b-e3ab-42d3-8d62-bf2cb5b67a53}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ThirdParty\EasyX\include\easyx.h">
+      <Filter>ThirdParty\EasyX\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\EasyX\include\graphics.h">
+      <Filter>ThirdParty\EasyX\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
