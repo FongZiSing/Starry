@@ -1,6 +1,6 @@
 # Visual Studio user specific files
-.vs/*
-.vscode/*
+.vs/
+.vscode/
 Starry/x64/*
 TemplateApp/HelloStarry/x64/*
 *.aps
@@ -12,6 +12,7 @@ x64/**/*.dll
 x64/**/*.pdb
 x64/**/*.exp
 x64/**/*.lib
+x64/**/*.idb
 
 # Executables
 x64/**/*.exe

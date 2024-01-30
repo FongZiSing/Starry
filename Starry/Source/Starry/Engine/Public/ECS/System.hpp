@@ -11,16 +11,16 @@
 
 namespace se::ecs
 {
-	class system_t
+	class system
 	{
 	public:
-		system_t() = default;
+		system() = default;
 
 
 	private:
 		/** Non-copyable. */
-		system_t(system_t const&) = delete;
-		system_t& operator = (system_t const&) = delete;
+		system(system const&) = delete;
+		system& operator = (system const&) = delete;
 
 		/** Disable new. */
 		void* operator new (std::size_t, void*) = delete;

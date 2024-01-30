@@ -5,66 +5,101 @@
 
 #pragma once
 
+#include "Reflection.hpp"
+
 #include <cstdint>
 #include <vector>
+#include <span>
+#include <unordered_map>
 
 
 
 namespace se::ecs
 {
-	struct entity_t
+	struct entity
+	{
+		int32_t id;
+	};
+}
+
+
+
+namespace se::ecs
+{
+	class entity_archetypes
 	{
 	public:
-		using id_t = int32_t;
-		using id_array_t = std::vector<id_t>;
-		using size_type = id_array_t::size_type;
-		using value_type = id_array_t::value_type;
-
-
+		using value_type = std::vector<entity>;
+		using hash_type = uint32_t;
+		using hash_map = std::unordered_map<hash_type, value_type>;
+	
+	
 	private:
-		id_array_t ids;
+		hash_map map{};
 
 
 	public:
-		constexpr void resize(size_type num)
+		[[msvc::forceinline]] value_type& add_unique(hash_type hash)
 		{
-			ids.resize(num);
+			return map[hash];
 		}
 
-		[[nodiscard]] constexpr size_type size() const noexcept
+		[[nodiscard]][[msvc::forceinline]] value_type& operator[] (hash_type hash)
 		{
-			return ids.size();
+		    return map.at(hash);
 		}
 
-		[[nodiscard]] constexpr id_t& at(size_type const index) noexcept
+		[[nodiscard]][[msvc::forceinline]] value_type const& operator[] (hash_type hash) const
 		{
-			// TODO: add a check.
-			return ids.data()[index];
+			return map.at(hash);
 		}
+	};
+}
 
-		[[nodiscard]] constexpr id_t const& at(size_type const index) const noexcept
-		{
-			// TODO: add a check.
-			return ids.data()[index];
-		}
+
+
+namespace se::ecs
+{
+	class entity_manager
+	{
+	private:
+		entity_archetypes archetypes;
 
 
 	public:
-		template<typename V>
-		void for_each(V&& visitor)
+		/**
+		 * @brief Retrieves the count of the given entity type.
+		 * @details 返回实体
+		 */
+		template <typename _object_t>
+		std::size_t num() const
 		{
-			for (id_t& id : ids)
-			{
-				visitor(id);
-			}
+			// Gets compile-time reflection information of entity.
+			constexpr auto reflect = reflection<_object_t>::config();
+			constexpr auto hash = hashcode_of_type<_object_t>();
+
+			return archetypes[hash].size();
 		}
 
-		template<typename V>
-		void for_each(V&& visitor) const
+		/**
+		 * @brief Allocate entities.
+		 * @details 分配实体
+		 */
+		template <typename _object_t>
+		void generate(std::span<const _object_t> objects)
 		{
-			for (id_t const& id : ids)
+			// Gets compile-time reflection information of entity.
+			constexpr auto reflect = reflection<_object_t>::config();
+			constexpr uint32_t hash = hashcode_of_type<_object_t>();
+			
+			// Allocation.
+			std::vector<entity>& entities = archetypes.add_unique(hash);
+			std::size_t count = objects.size();
+			std::size_t index = entities.size();
+			entities.reserve(index + count);
+			while (count--)
 			{
-				visitor(id);
+				entities.emplace_back(entity_archetypes::hash_type(index++));
 			}
 		}
 	};

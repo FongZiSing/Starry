@@ -19,15 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Starry\Core\Private\Intrinsic.hpp" />
     <ClInclude Include="Source\Starry\Core\Public\Math.hpp" />
     <ClInclude Include="Source\Starry\Core\Public\Ranges.hpp" />
     <ClInclude Include="Source\Starry\Core\Public\Vector.hpp" />
+    <ClInclude Include="Source\Starry\Engine\Public\Accelerator.hpp" />
     <ClInclude Include="Source\Starry\Engine\Public\ECS\Component.hpp" />
     <ClInclude Include="Source\Starry\Engine\Public\ECS\Entity.hpp" />
+    <ClInclude Include="Source\Starry\Engine\Public\ECS\Reflection.hpp" />
     <ClInclude Include="Source\Starry\Engine\Public\ECS\System.hpp" />
     <ClInclude Include="Source\Starry\Engine\Public\Particle.hpp" />
+    <ClInclude Include="Source\Starry\Engine\Public\Queries\GridAccelerator.hpp" />
     <ClInclude Include="Source\Starry\Engine\Public\Scene.hpp" />
     <ClInclude Include="Source\Starry\Starry.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Starry\Engine\Private\Queries\GridAccelerator.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -127,9 +134,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>

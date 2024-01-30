@@ -11,158 +11,56 @@
 #include "ECS/System.hpp"
 
 #include <type_traits>
-#include <stdexcept>
+
+
+namespace se::attribute_list { static constexpr se::ecs::string_literal position = "position"; }
+#define se_register_particle_attributes   se::ecs::register_meta_field
+#define se_make_attribute(name, pointer)  se::ecs::attribute<name, pointer>{}
+#define se_make_position(pointer)         se::ecs::attribute<se::attribute_list::position, pointer>{}
 
 
 
 namespace se
 {
-	struct particle_t
-	{
-		using position_t = vec2_t;
-		using velocity_t = vec2_t;
-		using custom_attribute_t = vec4_t;
-
-
-	public:
-		position_t position;
-		velocity_t velocity;
-		custom_attribute_t custom_attributes;
-	};
-
-	struct particle_intermediate_t
-	{
-		particle_t::position_t position;
-		particle_t::velocity_t velocity;
-		particle_t::custom_attribute_t custom_attributes;
-	};
-
-	struct basic_particle_intermediate_t
-	{
-		particle_t::position_t position;
-		particle_t::velocity_t velocity;
-	};
-}
-
-
-
-namespace se
-{
-	class particle_system_t : public ecs::system_t
+	class particle_system : public ecs::system
 	{
 	private:
-		ecs::entity_t entity;
-		ecs::component_t<particle_t::position_t> position_component;
-		ecs::component_t<particle_t::velocity_t> velocity_component;
-		ecs::component_t<particle_t::custom_attribute_t> custom_attributes_component;
+		ecs::entity_manager entity_mgr; // TODO
+		ecs::component_manager component_mgr;
 
 
 	public:
-		particle_system_t() = default;
+		particle_system() = default;
 
+		template <typename _user_particle_t>
 		std::size_t num() const noexcept
 		{
-			return entity.size();
+			return entity_mgr.num<_user_particle_t>();
 		}
 
-		[[msvc::forceinline]] void reset(std::size_t const num)
+		template <typename _user_particle_t>
+		void generate_particle(auto&& particles)
 		{
-			entity.resize(num);
-			position_component.resize(num);
-			velocity_component.resize(num);
-			custom_attributes_component.resize(num);
+			entity_mgr.generate<_user_particle_t>(particles);
+			component_mgr.generate_entity_components<_user_particle_t>(std::move(particles));
 		}
 
-		[[msvc::forceinline]] void init_at(std::size_t const index, particle_t const& particle)
+		template<typename _user_particle_t, ecs::string_literal attr>
+		[[msvc::forceinline]] auto any_of() const
 		{
-			entity.at(index) = (ecs::entity_t::id_t)index;
-			position_component.at(index) = particle.position;
-			velocity_component.at(index) = particle.velocity;
-			custom_attributes_component.at(index) = particle.custom_attributes;
+			return component_mgr.any_of<_user_particle_t, attr>();
+		}
+		
+		template<typename _user_particle_t, ecs::string_literal... attrs>
+		[[msvc::forceinline]] void for_each(auto&& callable)
+		{
+			component_mgr.for_each<_user_particle_t, attrs...>(std::move(callable));
 		}
 
-
-	public:
-		template <typename T, typename V>
-		[[msvc::forceinline]] void for_each(V&& visitor)
+		template<typename _user_particle_t, ecs::string_literal attrs>
+		[[msvc::forceinline]] void for_each(auto&& callable) const
 		{
-			if constexpr (std::is_same_v<T, ecs::entity_t::id_t>)
-			{
-				entity.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_t::position_t>)
-			{
-				position_component.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_t::velocity_t>)
-			{
-				velocity_component.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_t::custom_attribute_t>)
-			{
-				custom_attributes_component.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_intermediate_t>)
-			{
-				for (std::size_t i = 0; i < entity.size(); ++i)
-				{
-					particle_intermediate_t ref{ position_component.at(i), velocity_component.at(i), custom_attributes_component.at(i) };
-					visitor(ref);
-				}
-			}
-			else if constexpr (std::is_same_v<T, basic_particle_intermediate_t>)
-			{
-				for (std::size_t i = 0; i < entity.size(); ++i)
-				{
-					basic_particle_intermediate_t ref{ position_component.at(i), velocity_component.at(i) };
-					visitor(ref);
-				}
-			}
-			else
-			{
-				throw std::invalid_argument("[psl] unkown particle attribute!");
-			}
-		}
-
-		template <typename T, typename V>
-		[[msvc::forceinline]] void for_each_const(V&& visitor) const
-		{
-			if constexpr (std::is_same_v<T, ecs::entity_t::id_t>)
-			{
-				entity.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_t::position_t>)
-			{
-				position_component.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_t::velocity_t>)
-			{
-				velocity_component.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_t::custom_attribute_t>)
-			{
-				custom_attributes_component.for_each(std::move(visitor));
-			}
-			else if constexpr (std::is_same_v<T, particle_intermediate_t>)
-			{
-				for (std::size_t i = 0; i < entity.size(); ++i)
-				{
-					particle_intermediate_t ref { position_component.at(i), velocity_component.at(i), custom_attributes_component.at(i) };
-					visitor(ref);
-				}
-			}
-			else if constexpr (std::is_same_v<T, basic_particle_intermediate_t>)
-			{
-				for (std::size_t i = 0; i < entity.size(); ++i)
-				{
-					basic_particle_intermediate_t ref { position_component.at(i), velocity_component.at(i) };
-					visitor(ref);
-				}
-			}
-			else
-			{
-				throw std::invalid_argument("[psl] unkown particle attribute!");
-			}
+			component_mgr.for_each<_user_particle_t, attrs>(std::move(callable));
 		}
 	};
 }

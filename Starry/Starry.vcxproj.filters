@@ -22,14 +22,20 @@
     <Filter Include="Source\Starry\Core\Public">
       <UniqueIdentifier>{979dc570-5d5f-437b-b5bc-aa437956ce22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Starry\Core\Private %28TODO%29">
-      <UniqueIdentifier>{6a4850c6-c00b-4063-9c4d-611174413af8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Starry\Engine\Private %28TODO%29">
-      <UniqueIdentifier>{b4523be4-1eec-4163-b0e6-c07fa0ecd1b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Starry\Engine\Public\ECS">
       <UniqueIdentifier>{5b5be600-ff00-42ad-907a-ac077f9486f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine\Public\Queries">
+      <UniqueIdentifier>{a52e0088-6ee8-4700-8350-ed7b3379baff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine\Private">
+      <UniqueIdentifier>{b4523be4-1eec-4163-b0e6-c07fa0ecd1b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Engine\Private\Queries">
+      <UniqueIdentifier>{4ceaa8da-9b89-4e73-8b1e-5bb436f82812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Starry\Core\Private">
+      <UniqueIdentifier>{6a4850c6-c00b-4063-9c4d-611174413af8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,5 +66,22 @@
     <ClInclude Include="Source\Starry\Starry.hpp">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\ECS\Reflection.hpp">
+      <Filter>Source\Starry\Engine\Public\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\Queries\GridAccelerator.hpp">
+      <Filter>Source\Starry\Engine\Public\Queries</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Engine\Public\Accelerator.hpp">
+      <Filter>Source\Starry\Engine\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Starry\Core\Private\Intrinsic.hpp">
+      <Filter>Source\Starry\Core\Private</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Starry\Engine\Private\Queries\GridAccelerator.cpp">
+      <Filter>Source\Starry\Engine\Private\Queries</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -84,8 +84,8 @@ namespace se::ranges
 
 		constexpr decltype(auto) operator* () const
 		{
-			struct pair_t { size_type size; value_type& value; };
-			return pair_t { iterate_index, container[iterate_index] };
+			struct indexed_pair { size_type size; value_type& value; };
+			return indexed_pair { iterate_index, container[iterate_index] };
 		}
 
 		constexpr value_type* operator-> () const
@@ -114,7 +114,6 @@ namespace se::ranges
 		using value_type = container_type::value_type;
 		using size_type = container_type::size_type;
 		using iterator = indexed_iterator<container_type, value_type, size_type>;
-		using const_iterator = indexed_iterator<const container_type, const value_type, size_type>;
 
 
 	private:
@@ -131,19 +130,41 @@ namespace se::ranges
 			return iterator { container };
 		}
 
-		constexpr const_iterator begin() const noexcept
-		{
-			return const_iterator { container };
-		}
-
 		constexpr iterator end() noexcept
 		{
 			return iterator { container, container.size() };
 		}
+	};
+
+
+
+	template <typename C>
+	class indexed_const_view
+	{
+	public:
+		using container_type = C;
+		using value_type = container_type::value_type;
+		using size_type = container_type::size_type;
+		using const_iterator = indexed_iterator<const container_type, const value_type, size_type>;
+
+
+	private:
+		container_type& container;
+
+
+	public:
+		constexpr indexed_const_view(container_type& in_container) noexcept
+			: container(in_container)
+		{}
+
+		constexpr const_iterator begin() const noexcept
+		{
+			return const_iterator{ container };
+		}
 
 		constexpr const_iterator end() const noexcept
 		{
-			return const_iterator { container, container.size() };
+			return const_iterator{ container, container.size() };
 		}
 	};
 }
