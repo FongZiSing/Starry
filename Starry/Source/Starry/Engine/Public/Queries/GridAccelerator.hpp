@@ -18,6 +18,25 @@ namespace se
 {
 	class grid2d_accelerator
 	{
+	public:
+		struct radius
+		{
+		private:
+			float r;
+			float r2;
+
+
+		public:
+			constexpr radius(float in_radius) noexcept
+				: r(in_radius)
+				, r2(in_radius * in_radius)
+			{}
+
+			constexpr operator float const&() const noexcept { return r; }
+			constexpr float const& squared() const noexcept { return r2; }
+		};
+
+
 	private:
 		struct alignas(16) resource
 		{
@@ -53,7 +72,7 @@ namespace se
 		 */
 		void rebuild(std::span<const vec2> positions) noexcept;
 
-		void query_near_of(std::size_t index, vec2 position, float radius, std::function<void(int, float, vec2 const)>&& callable) const;
+		void query_near_of(std::size_t index, vec2 position, radius const& r, std::function<void(int, float, vec2 const)>&& callable) const;
 
 
 	private:

@@ -11,6 +11,21 @@
 #endif
 
 
+
+namespace se
+{
+	// James Arvo. 1990. "A simple method for box-sphere intersection testing."
+	//     Graphics gems. Academic Press Professional, Inc., USA, 335–339.
+	[[msvc::forceinline]] bool box_circle_intersect(float4 const& center, float4 const& extent, float4 const& point, float radius_squared)
+	{
+		float4 v = abs(sub(point, center));
+		float4 u = max(sub(v, extent), zero4f());
+		return magnitude(u) <= radius_squared;
+	}
+}
+
+
+
 namespace se
 {
 	void grid2d_accelerator::rebuild(std::span<const se::vec2> positions) noexcept
@@ -61,8 +76,8 @@ namespace se
 			float4 floating_xxxx = shuffle<0, 2, 0, 2>(floating_pos1, floating_pos2);
 			float4 floating_yyyy = shuffle<1, 3, 1, 3>(floating_pos1, floating_pos2);
 
-			int4 shifted_xxxx = bit_ashift(cast(floating_xxxx), grid_bits);
-			int4 shifted_yyyy = bit_ashift(cast(floating_yyyy), grid_bits);
+			int4 shifted_xxxx = bit_ashift(cast_i(floating_xxxx), grid_bits);
+			int4 shifted_yyyy = bit_ashift(cast_i(floating_yyyy), grid_bits);
 			int4 clamped_xxxx = clamp(min_0000, max_xxxx, shifted_xxxx);
 			int4 clamped_yyyy = clamp(min_0000, max_yyyy, shifted_yyyy);
 			int4 correct_slot = add(mul(stride, clamped_yyyy), clamped_xxxx);
@@ -92,48 +107,63 @@ namespace se
 
 
 
-	void grid2d_accelerator::query_near_of(std::size_t index, vec2 position, float radius, std::function<void(int, float, vec2 const)>&& callable) const
+	void grid2d_accelerator::query_near_of(std::size_t index, vec2 position, radius const& r, std::function<void(int, float, vec2 const)>&& callable) const
 	{
-		if (radius <= 0) [[unlikely]]
+		if (r <= 0) [[unlikely]]
 		{
 			return;
 		}
 
-		// TODO
+		constexpr int32_t grid_size = (1 << grid_bits);
+		const int32_t grid_r = (int32_t(r) + grid_size - 1) >> grid_bits;
+		const int32_t slot_x = int32_t(position.x) >> grid_bits;
+		const int32_t slot_y = int32_t(position.y) >> grid_bits;
 
-		const float radius_squared = math::square(radius);
-		const int32_t integer_radius = (int32_t)radius;
-		const int32_t grid_radius = (integer_radius + (1 << grid_bits) - 1) >> grid_bits;
+		int32_t box_min_x = std::clamp(slot_x - grid_r, 0, cols);
+		int32_t box_min_y = std::clamp(slot_y - grid_r, 0, rows);
+		int32_t box_max_x = std::clamp(slot_x + grid_r, 0, cols);
+		int32_t box_max_y = std::clamp(slot_y + grid_r, 0, rows);
 
-		int32_t slot_x = int32_t(position.x) >> grid_bits;
-		int32_t slot_y = int32_t(position.y) >> grid_bits;
+		constexpr int32_t grid_extent = grid_size >> 1;
+		constexpr float4 cube_size_x = construct(float(grid_size), 0.f, 0.f, 0.f);
+		constexpr float4 cube_size_y = construct(0.f, float(grid_size), 0.f, 0.f);
+		constexpr float4 cube_extent = construct(float(grid_extent));
+		float4 cube_center = make(
+			float((box_min_x << grid_bits) + grid_extent),
+			float((box_min_y << grid_bits) + grid_extent),
+			0.f, 0.f
+		);
+		float4 circle_position = make(position.x, position.y, 0.f, 0.f);
 
-		int4 box = make(-grid_radius, -grid_radius, grid_radius, grid_radius);
-		box = add(box, make(slot_x, slot_y, slot_x, slot_y));
-		box = clamp(zero4i(), make(cols, rows, cols, rows), box);
-		
-		for (int32_t i = box.m128i_i32[0]; i < box.m128i_i32[2]; ++i)
+		const resource* res_ptr = resources.data();
+		for (int32_t i = box_min_y; i < box_max_y; ++i)
 		{
-			for (int32_t j = box.m128i_i32[1]; j < box.m128i_i32[3]; ++j)
+			float4 temp_center = cube_center;
+			for (int32_t j = box_min_x, slot = box_min_x + (i * cols); j < box_max_x; ++j, ++slot)
 			{
-				int32_t slot = i + (j * cols);
 				const grid& grid = grids[slot];
 				int32_t head = grid.head;
 				
-				while (head)
+				if (box_circle_intersect(temp_center, cube_extent, circle_position, r.squared()))
 				{
-					resource const& res = resources[head - 1];
-					if (index != head - 1) // ignore self.
+					while (head)
 					{
-						vec2 const& found_position = res.position;
-						if (float distance_squared = position.distance_squared(found_position); distance_squared < radius_squared)
+						prefetch(res_ptr);
+						resource const& res = res_ptr[head - 1];
+						if (index != head - 1) // ignore self.
 						{
-							callable(head, distance_squared, found_position);
+							vec2 const& found_position = res.position;
+							if (float distance_squared = position.distance_squared(found_position); distance_squared < r.squared())
+							{
+								callable(head, distance_squared, found_position);
+							}
 						}
+						head = res.next;
 					}
-					head = res.next;
 				}
+				temp_center = add(temp_center, cube_size_x);
 			}
+			cube_center = add(cube_center, cube_size_y);
 		}
 	}
 }

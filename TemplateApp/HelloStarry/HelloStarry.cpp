@@ -245,7 +245,8 @@ struct particle_position_updater
 	void operator() (std::size_t index, se::vec2& position, se::vec2& velocity, se::vec2& Q)
 	{
 		se::vec2 F = 0;
-		accel->query_near_of(index, position, 5, [&](int index, float distance_squared, se::vec2 const& nearly_position)
+		constexpr se::grid2d_accelerator::radius radius = 5;
+		accel->query_near_of(index, position, radius, [&](int index, float distance_squared, se::vec2 const& nearly_position)
 			{
 				float distance = sqrtf(distance_squared);
 				if (distance_squared < 25)
@@ -355,8 +356,9 @@ int main()
 			MOUSEMSG m;
 			PeekMouseMsg(&m);
 			TRACE_CPU_PROFILER("query time", canvas);
-			se::vec2 position = canvas.put_circle(se::vec2(m.x, m.y), RED, 50);
-			accel->query_near_of(-1, position, 50, [&canvas](int, float, se::vec2 const& nearly_position)
+			constexpr se::grid2d_accelerator::radius test_radius = 50;
+			se::vec2 position = canvas.put_circle(se::vec2(m.x, m.y), RED, test_radius);
+			accel->query_near_of(-1, position, test_radius, [&canvas](int, float, se::vec2 const& nearly_position)
 				{
 					canvas.draw_square(nearly_position, GREEN, 2);
 				});

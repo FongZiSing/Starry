@@ -36,6 +36,26 @@ namespace se
 		return _mm_setr_ps(x, y, z, w);
 	}
 
+	[[nodiscard]] static consteval float4 construct(float v)
+	{
+		return { .m128_f32{ v, v, v, v } };
+	}
+
+	[[nodiscard]] static consteval float4 construct(float x, float y, float z, float w)
+	{
+		return { .m128_f32{ x, y, z, w } };
+	}
+
+	[[nodiscard]] static consteval float4 construct(uint32_t v)
+	{
+		return { .m128_u32{ v, v, v, v } };
+	}
+
+	[[nodiscard]] static consteval float4 construct(uint32_t x, uint32_t y, uint32_t z, uint32_t w)
+	{
+		return { .m128_u32{ x, y, z, w } };
+	}
+
 	[[nodiscard]][[msvc::forceinline]] static float4 load(const void* ptr) noexcept
 	{
 		return _mm_loadu_ps((const float*)ptr);
@@ -394,7 +414,7 @@ namespace se
 	}
 
 	/**
-	 * @brief Returns the length of the vector `xmm`.
+	 * @brief Returns the squared length of the vector `xmm`.
 	 */
 	[[nodiscard]][[msvc::forceinline]] static float magnitude(float4 const& xmm) noexcept
 	{
@@ -487,6 +507,16 @@ namespace se
 	[[nodiscard]][[msvc::forceinline]] static int4 make(int x, int y, int z, int w) noexcept
 	{
 		return _mm_setr_epi32(x, y, z, w);
+	}
+
+	[[nodiscard]] static consteval int4 construct(int32_t v)
+	{
+		return { .m128i_i32{ v, v, v, v } };
+	}
+
+	[[nodiscard]] static consteval int4 construct(int32_t x, int32_t y, int32_t z, int32_t w)
+	{
+		return { .m128i_i32{ x, y, z, w } };
 	}
 
 	[[nodiscard]][[msvc::forceinline]] static int4 load(const int* ptr) noexcept
@@ -755,12 +785,12 @@ namespace se
 
 namespace se
 {
-	[[nodiscard]][[msvc::forceinline]] static float4 cast(int4 const& xmm) noexcept
+	[[nodiscard]][[msvc::forceinline]] static float4 cast_f(int4 const& xmm) noexcept
 	{
 		return _mm_cvtepi32_ps(xmm);
 	}
 
-	[[nodiscard]][[msvc::forceinline]] static int4 cast(float4 const& xmm) noexcept
+	[[nodiscard]][[msvc::forceinline]] static int4 cast_i(float4 const& xmm) noexcept
 	{
 		return _mm_cvttps_epi32(xmm);
 	}
@@ -768,5 +798,10 @@ namespace se
 	[[nodiscard]][[msvc::forceinline]] static int4 round_to_int4(float4 const& xmm) noexcept
 	{
 		return _mm_cvtps_epi32(xmm);
+	}
+
+	[[msvc::forceinline]] static void prefetch(const void* ptr)
+	{
+		_mm_prefetch(static_cast<const char*>(ptr), _MM_HINT_T0);
 	}
 }

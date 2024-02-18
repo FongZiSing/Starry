@@ -123,12 +123,12 @@ namespace se::ecs
 			return components;
 		}
 
-		[[nodiscard]] [[msvc::forceinline]] value_type& operator[] (hash_type hash)
+		[[nodiscard]][[msvc::forceinline]] value_type& operator[] (hash_type hash)
 		{
 			return map.at(hash);
 		}
 
-		[[nodiscard]] [[msvc::forceinline]] value_type const& operator[] (hash_type hash) const
+		[[nodiscard]][[msvc::forceinline]] value_type const& operator[] (hash_type hash) const
 		{
 			return map.at(hash);
 		}
