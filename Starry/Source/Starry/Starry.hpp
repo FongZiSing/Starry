@@ -5,5 +5,6 @@
 
 #pragma once
 
+#include "Config.hpp"
 #include "Starry/Engine/Public/Scene.hpp"
 #include "Starry/Engine/Public/Accelerator.hpp"

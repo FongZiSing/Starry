@@ -11,6 +11,10 @@
 #include <unordered_map>
 #include <span>
 
+#ifdef STARRY_USE_PARALLEL
+#include <ppl.h>
+#endif
+
 
 
 namespace se::ecs
@@ -212,11 +216,23 @@ namespace se::ecs
 			// Calculates the hash value of entity in compile-time, uses it to find the entity.
 			constexpr uint32_t hash = hashcode_of_type<_object_t>();
 			std::vector<component>& components = archetypes[hash];
+			const std::size_t component_size = components[0].size();
 
 			// Indexes to the corresponding component based on reflection information and traverse it.
-			if constexpr (sizeof...(attrs) == 0)
+			if constexpr ((sizeof...(attrs) == 0) || (sizeof...(attrs) == reflect.num_fields()))
 			{
-				const std::size_t component_size = components[0].size();
+#ifdef STARRY_USE_PARALLEL
+				concurrency::parallel_for(std::size_t(0), component_size, [&](std::size_t i)
+				{
+					reflect.visit_fields(
+						[i, &components](std::size_t component_index)
+						{
+							return components[component_index].data(i);
+						},
+						callable, i
+					);
+				});
+#else
 				for (std::size_t i = 0; i < component_size; ++i)
 				{
 					reflect.visit_fields(
@@ -227,17 +243,40 @@ namespace se::ecs
 						callable, i
 					);
 				}
+#endif
 			}
 			else if constexpr (sizeof...(attrs) == 1)
 			{
 				constexpr auto field = reflect.get_field<attrs...>();
 				using data_t = decltype(field)::member_type;
-				components[field.static_index].for_each<data_t>(callable);
+				data_t* data = reinterpret_cast<data_t*>(components[field.static_index].data());
+#ifdef STARRY_USE_PARALLEL
+				concurrency::parallel_for(std::size_t(0), component_size, [&](std::size_t i)
+				{
+					callable(i, data[i]);
+				});
+#else
+				for (std::size_t i = 0; i < component_size; ++i)
+				{
+					callable(i, data[i]);
+				}
+#endif
 			}
 			else
 			{
 				constexpr auto filter_reflect = reflect.filter_object<attrs...>();
-				const std::size_t component_size = components[0].size();
+#ifdef STARRY_USE_PARALLEL
+				concurrency::parallel_for(std::size_t(0), component_size, [&](std::size_t i)
+				{
+					filter_reflect.visit_fields(
+						[i, &components](std::size_t component_index)
+						{
+							return components[component_index].data(i);
+						},
+						callable, i
+					);
+				});
+#else
 				for (std::size_t i = 0; i < component_size; ++i)
 				{
 					filter_reflect.visit_fields(
@@ -248,6 +287,7 @@ namespace se::ecs
 						callable, i
 					);
 				}
+#endif
 			}
 		}
 

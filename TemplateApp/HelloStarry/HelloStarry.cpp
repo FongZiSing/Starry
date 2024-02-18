@@ -177,8 +177,6 @@ struct my_particle_t
 {
 	se::vec2 position;
 	se::vec2 velocity;
-	se::vec2 F;
-	se::vec2 Q;
 
 	//********************************
 	// Config particle's attributes.
@@ -188,8 +186,7 @@ struct my_particle_t
 	{
 		return se_register_particle_attributes(
 			se_make_position(&my_particle_t::position),
-			se_make_attribute("velocity", &my_particle_t::velocity),
-			se_make_attribute("Q", &my_particle_t::Q)
+			se_make_attribute("velocity", &my_particle_t::velocity)
 		);
 	}
 };
@@ -219,8 +216,6 @@ struct particle_generator
 				{
 					{ x, y }, // 粒子初始位置
 					{ 0, 0 }, // 粒子初始速度
-					0, // F
-					0, // Q
 				}
 			);
 		}
@@ -242,7 +237,7 @@ struct particle_position_updater
 	{
 	}
 
-	void operator() (std::size_t index, se::vec2& position, se::vec2& velocity, se::vec2& Q)
+	void operator() (std::size_t index, se::vec2& position, se::vec2& velocity)
 	{
 		se::vec2 F = 0;
 		constexpr se::grid2d_accelerator::radius radius = 5;
@@ -255,11 +250,13 @@ struct particle_position_updater
 					distance = 5;
 				}
 				
-				se::vec2 factor1 = (nearly_position - position) / distance;
+				float factor1x = (nearly_position.x - position.x) / distance;
+				float factor1y = (nearly_position.y - position.y) / distance;
 				constexpr float KE = 10;
 				constexpr float Q = 5;
 				float factor2 = KE * Q * Q / distance_squared;
-				F += -factor1 * factor2;
+				F.x += -factor1x * factor2;
+				F.y += -factor1y * factor2;
 			});
 
 		// Collides the boundary.

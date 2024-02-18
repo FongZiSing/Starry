@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Starry\Config.hpp" />
     <ClInclude Include="Source\Starry\Core\Private\Intrinsic.hpp" />
     <ClInclude Include="Source\Starry\Core\Public\Math.hpp" />
     <ClInclude Include="Source\Starry\Core\Public\Ranges.hpp" />

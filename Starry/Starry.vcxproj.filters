@@ -78,6 +78,9 @@
     <ClInclude Include="Source\Starry\Core\Private\Intrinsic.hpp">
       <Filter>Source\Starry\Core\Private</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Starry\Config.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Starry\Engine\Private\Queries\GridAccelerator.cpp">
