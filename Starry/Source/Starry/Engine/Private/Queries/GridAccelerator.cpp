@@ -37,7 +37,7 @@ namespace se
 		resource* res_ptr = resources.data();
 		std::size_t size = positions.size() / 4;
 
-		const auto insert_lambda = [this, res_ptr](int32_t slot, resource* last, const vec2* position)
+		const auto insert_lambda = [this, res_ptr](int32_t slot, resource* last, const vec2* position) [[msvc::forceinline]]
 			{
 				grid& curr = grids[slot];
 				int32_t prev = curr.head;
@@ -82,13 +82,10 @@ namespace se
 			int4 clamped_yyyy = clamp(min_0000, max_yyyy, shifted_yyyy);
 			int4 correct_slot = add(mul(stride, clamped_yyyy), clamped_xxxx);
 
-			[[msvc::forceinline_calls]]
-			{
-				insert_lambda(extract<0>(correct_slot), res_ptr++, pos_ptr++);
-				insert_lambda(extract<1>(correct_slot), res_ptr++, pos_ptr++);
-				insert_lambda(extract<2>(correct_slot), res_ptr++, pos_ptr++);
-				insert_lambda(extract<3>(correct_slot), res_ptr++, pos_ptr++);
-			}
+			insert_lambda(extract<0>(correct_slot), res_ptr++, pos_ptr++);
+			insert_lambda(extract<1>(correct_slot), res_ptr++, pos_ptr++);
+			insert_lambda(extract<2>(correct_slot), res_ptr++, pos_ptr++);
+			insert_lambda(extract<3>(correct_slot), res_ptr++, pos_ptr++);
 		}
 #endif
 		while (pos_ptr != positions.data() + positions.size())
@@ -100,7 +97,6 @@ namespace se
 			int32_t clamped_y = std::clamp(integer_y, 0, rows - 1);
 			int32_t slot = clamped_x + (clamped_y * cols);
 
-			[[msvc::forceinline_calls]]
 			insert_lambda(slot, res_ptr++, pos_ptr++);
 		}
 	}
